@@ -44,6 +44,7 @@ jobs:
       - name: Install dependencies
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
+          touch Pipfile
           pipenv install --deploy --dev
 
       - name: Scrape Etix and output logs
