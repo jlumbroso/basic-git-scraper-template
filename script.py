@@ -1,7 +1,9 @@
-import datetime
-import typing
 import copy
+import datetime
 import json
+import os
+import pathlib
+import typing
 
 import requests
 import pytz
@@ -118,6 +120,9 @@ class EventMonitor:
         if filename is None:
             raise ValueError("no filename available!")
 
+        # ensure the folder where we output the file exists
+        pathlib.Path(os.path.dirname(filename)).mkdir(parents=True, exist_ok=True)
+
         with open(filename, "w") as f:
             f.write(json.dumps(self._data, indent=2))
             self._filename = filename
@@ -231,6 +236,6 @@ def update_hopewell_quarry_data(data):
     return data
 
 
-hopewell_quarry_data = EventMonitor("hopewell_quarry_data.json")
+hopewell_quarry_data = EventMonitor("data/hopewell_quarry_data.json")
 hopewell_quarry_data = update_hopewell_quarry_data(hopewell_quarry_data)
 hopewell_quarry_data.save()

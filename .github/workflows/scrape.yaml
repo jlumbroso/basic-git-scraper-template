@@ -7,7 +7,7 @@ on:
   schedule:
     - cron: "*/5 * * * *" # run every 5 minutes (https://crontab.guru/#*/5_*_*_*_*)
 
-name: Scrape FlightAware Logs
+name: Scrape Hopewell Quarry Availability
 jobs:
   update-logs:
     name: Scrape Etix Availability
