@@ -27,7 +27,7 @@ EtixEventInfo = typing.Dict
 
 
 def time_now():
-    return datetime.datetime.now(HOPEWELL_QUARRY_TIMEZONE).strftime("%I:%M%p")
+    return datetime.datetime.now(HOPEWELL_QUARRY_TIMEZONE).strftime("%Y-%m-%d %I:%M%p")
 
 
 def prev_day(year, month, day):
