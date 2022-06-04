@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "*/5 * * * *" # run every Saturday at 8am (https://crontab.guru/#0_8_*_*_6)
+    - cron: "*/5 * * * *" # run every 5 minutes (https://crontab.guru/#*/5_*_*_*_*)
 
 name: Scrape FlightAware Logs
 jobs:

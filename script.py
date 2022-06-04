@@ -4,12 +4,14 @@ import copy
 import json
 
 import requests
+import pytz
 
 ETIX_TIME_SEARCHED_API = "https://www.etix.com/ticket/online/timedEntrySearch.do"
 ETIX_TIME_SEARCHED_METHOD = "specifiedTimedEntryData"
 
 HOPEWELL_QUARRY_EVENT_ID = "1026877"
 HOPEWELL_QUARRY_MAX_OPEN = 300
+HOPEWELL_QUARRY_TIMEZONE = pytz.timezone("US/Eastern")
 
 OptionalNumber = typing.Optional[typing.Union[str, int]]
 
@@ -23,7 +25,7 @@ EtixEventInfo = typing.Dict
 
 
 def time_now():
-    return datetime.datetime.now().strftime("%I:%M%p")
+    return datetime.datetime.now(HOPEWELL_QUARRY_TIMEZONE).strftime("%I:%M%p")
 
 
 def prev_day(year, month, day):
