@@ -14,10 +14,12 @@ HOPEWELL_QUARRY_MAX_OPEN = 300
 OptionalNumber = typing.Optional[typing.Union[str, int]]
 
 
-class EtixEventInfo(typing.TypedDict):
-    id: int
-    open: int
-    date: datetime.date
+# class EtixEventInfo(typing.TypedDict):
+#     id: int
+#     open: int
+#     date: datetime.date
+
+EtixEventInfo = typing.Dict
 
 
 def time_now():

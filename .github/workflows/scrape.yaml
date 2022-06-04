@@ -1,0 +1,62 @@
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "*/5 * * * *" # run every Saturday at 8am (https://crontab.guru/#0_8_*_*_6)
+
+name: Scrape FlightAware Logs
+jobs:
+  update-logs:
+    name: Scrape Etix Availability
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: write
+      contents: write
+      deployments: write
+      pull-requests: write
+      repository-projects: write
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      # Setup Python (faster than using Python container)
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Install pipenv
+        run: |
+          python -m pip install --upgrade pipenv wheel
+
+      - name: Check pipenv cache before installing dependencies
+        id: cache-pipenv
+        uses: actions/cache@v1
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
+
+      - name: Install dependencies
+        if: steps.cache-pipenv.outputs.cache-hit != 'true'
+        run: |
+          pipenv install --deploy --dev
+
+      - name: Scrape Etix and output logs
+        run: |
+          pipenv run python ./script.py
+
+      - name: Commit generated logs 🚀
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "Commit updated data"
+          add: "./*.json"
+          cwd: "."
+          force: true
+          default_author: github_actions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
