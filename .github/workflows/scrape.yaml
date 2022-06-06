@@ -5,7 +5,17 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "*/5 * * * *" # run every 5 minutes (https://crontab.guru/#*/5_*_*_*_*)
+    # Run at every 5th minute past every hour from 9 through 18 on every
+    # day-of-week from Wednesday through Sunday
+    # https://crontab.guru/#*/5_9-18_*_*_0,3-6
+    - cron: "*/5 9-18 * * 0,3-6"
+
+    # Run every hour outside of the hot period above
+    - cron: "30 0-8,18-23 * * *"
+    - cron: "30 9-18 * * 1-2"
+
+    # TOO FREQUENT:
+    # - cron: "*/5 * * * *" # run every 5 minutes (https://crontab.guru/#*/5_*_*_*_*)
 
 name: Scrape Hopewell Quarry Availability
 jobs:
