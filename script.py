@@ -14,6 +14,7 @@ ETIX_TIME_SEARCHED_METHOD = "specifiedTimedEntryData"
 HOPEWELL_QUARRY_EVENT_ID = "1026877"
 HOPEWELL_QUARRY_MAX_OPEN = 300
 HOPEWELL_QUARRY_TIMEZONE = pytz.timezone("US/Eastern")
+HOPEWELL_QUARRY_CONTINUOUS_UNBOOKED = 7
 
 OptionalNumber = typing.Optional[typing.Union[str, int]]
 
@@ -219,7 +220,7 @@ def update_hopewell_quarry_data(data):
     #
     contiguous_unbooked = 0
 
-    while contiguous_unbooked < 2:
+    while contiguous_unbooked < HOPEWELL_QUARRY_CONTINUOUS_UNBOOKED:
         query = lookup_hopewell_quarry(day=day, month=month, year=year)
         if query is None:
             (year, month, day) = next_day(year=year, month=month, day=day)
