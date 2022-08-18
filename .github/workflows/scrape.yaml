@@ -14,13 +14,10 @@ on:
     - cron: "30 0-8,18-23 * * *"
     - cron: "30 9-18 * * 1-2"
 
-    # TOO FREQUENT:
-    # - cron: "*/5 * * * *" # run every 5 minutes (https://crontab.guru/#*/5_*_*_*_*)
-
-name: Scrape Hopewell Quarry Availability
+name: Scrape Update
 jobs:
   update-logs:
-    name: Scrape Etix Availability
+    name: Scrape Update
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -57,7 +54,7 @@ jobs:
           touch Pipfile
           pipenv install --deploy --dev
 
-      - name: Scrape Etix and output logs
+      - name: Scrape content and output
         run: |
           pipenv run python ./script.py
 
@@ -65,7 +62,7 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           message: "Commit updated data"
-          add: "./*.json"
+          add: "./data/*.json ./data/*.csv"
           cwd: "."
           force: true
           default_author: github_actions

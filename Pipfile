@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 requests = "*"
 pytz = "*"
+waybackpy = "*"
+bs4 = "*"
 
 [dev-packages]
 
