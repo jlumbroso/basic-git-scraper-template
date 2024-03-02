@@ -11,35 +11,82 @@ import pytz
 TIMEZONE = pytz.timezone("US/Eastern")
 
 
-def time_now():
+def time_now() -> str:
+    """
+    Gets the current time in the "US/Eastern" timezone formatted as "YYYY-MM-DD HH:MMAM/PM".
+
+    :return: A string representing the current time formatted as specified.
+    :rtype: str
+    """
     return datetime.datetime.now(TIMEZONE).strftime("%Y-%m-%d %I:%M%p")
 
 
-def prev_day(year, month, day):
+def prev_day(
+    year: int, month: int, day: int
+) -> typing.Optional[typing.Tuple[int, int, int]]:
+    """
+    Calculates the previous day based on the input year, month, and day.
 
+    :param year: The year of the input date.
+    :type year: int
+    :param month: The month of the input date.
+    :type month: int
+    :param day: The day of the input date.
+    :type day: int
+    :return: A tuple of (year, month, day) representing the previous day or None if the input date is invalid.
+    :rtype: typing.Optional[typing.Tuple[int, int, int]]
+    """
     try:
         date = datetime.datetime(year=year, month=month, day=day)
     except ValueError:
-        return
+        return None
 
     date += datetime.timedelta(hours=-24)
     return (date.year, date.month, date.day)
 
 
-def next_day(year, month, day):
+def next_day(
+    year: int, month: int, day: int
+) -> typing.Optional[typing.Tuple[int, int, int]]:
+    """
+    Calculates the next day based on the input year, month, and day.
 
+    :param year: The year of the input date.
+    :type year: int
+    :param month: The month of the input date.
+    :type month: int
+    :param day: The day of the input date.
+    :type day: int
+    :return: A tuple of (year, month, day) representing the next day or None if the input date is invalid.
+    :rtype: typing.Optional[typing.Tuple[int, int, int]]
+    """
     try:
         date = datetime.datetime(year=year, month=month, day=day)
     except ValueError:
-        return
+        return None
 
     date += datetime.timedelta(hours=24)
     return (date.year, date.month, date.day)
 
 
 class DailyEventMonitor:
+    """
+    A class to monitor and record daily events.
 
-    def __init__(self, filename=None, data=None):
+    Attributes:
+        _data (dict): A dictionary to store event data.
+        _filename (str, optional): The filename where event data is saved and loaded from.
+    """
+
+    def __init__(
+        self, filename: typing.Optional[str] = None, data: typing.Optional[dict] = None
+    ) -> None:
+        """
+        Initializes the DailyEventMonitor with optional data and filename.
+
+        :param filename: The name of the file from which to load initial event data.
+        :param data: Initial event data to be used by the monitor.
+        """
         self._data = dict()
         self._filename = None
 
@@ -50,39 +97,51 @@ class DailyEventMonitor:
             self.load(filename)
 
     def _lookup_day(
-        self,
-        year: int,
-        month: int,
-        day: int
+        self, year: int, month: int, day: int
     ) -> typing.List[typing.Tuple[typing.Tuple[str, int]]]:
+        """
+        Looks up events for a specific day.
+
+        :param year: The year of the date to look up.
+        :param month: The month of the date to look up.
+        :param day: The day of the date to look up.
+        :return: A list of events for the specified day.
+        """
         if self._data is None:
             self._data = dict()
 
         key = "{}-{}-{}".format(year, month, day)
-
         self._data[key] = self._data.get(key, list())
         return self._data[key]
 
     def get(
-        self,
-        year: int,
-        month: int,
-        day: int
+        self, year: int, month: int, day: int
     ) -> typing.List[typing.Tuple[typing.Tuple[str, int]]]:
+        """
+        Retrieves events for a specific day.
+
+        :param year: The year of the date for which to retrieve events.
+        :param month: The month of the date for which to retrieve events.
+        :param day: The day of the date for which to retrieve events.
+        :return: A list of events for the specified day.
+        """
         return self._lookup_day(year=year, month=month, day=day)
 
     def add(
-        self,
-        year: int,
-        month: int,
-        day: int,
-        value: int,
-        ignore_repeat: bool = True,
+        self, year: int, month: int, day: int, value: int, ignore_repeat: bool = True
     ) -> bool:
+        """
+        Adds an event for a specific day.
 
+        :param year: The year of the date to which to add an event.
+        :param month: The month of the date to which to add an event.
+        :param day: The day of the date to which to add an event.
+        :param value: The value or identifier of the event to add.
+        :param ignore_repeat: Whether to ignore the event if it is a repeat of the last event for that day.
+        :return: True if the event was added, False otherwise (e.g., if ignored due to being a repeat).
+        """
         data = self._lookup_day(year=year, month=month, day=day)
 
-        # ignore repeated value
         if ignore_repeat and len(data) > 0 and data[-1][1] == value:
             return False
 
@@ -90,7 +149,13 @@ class DailyEventMonitor:
         data.append((time_now(), value))
         return True
 
-    def load(self, filename=None):
+    def load(self, filename: typing.Optional[str] = None) -> bool:
+        """
+        Loads event data from a file.
+
+        :param filename: The name of the file from which to load event data. Uses the instance's filename if None.
+        :return: True if the data was successfully loaded, False otherwise.
+        """
         filename = filename or self._filename
         if filename is None:
             raise ValueError("no filename available!")
@@ -102,28 +167,36 @@ class DailyEventMonitor:
                 try:
                     data = json.loads(f.read())
                     self._data = data
-                    self._filename = filename
                     return True
                 except:
                     return False
         except:
             return False
 
-    def save(self, filename=None):
+    def save(self, filename: typing.Optional[str] = None) -> None:
+        """
+        Saves the current event data to a file.
+
+        :param filename: The name of the file to which to save event data. Uses the instance's filename if None.
+        """
         filename = filename or self._filename
         if filename is None:
             raise ValueError("no filename available!")
 
         # ensure the folder where we output the file exists
-        pathlib.Path(os.path.dirname(filename)).mkdir(
-            parents=True, exist_ok=True)
+        pathlib.Path(os.path.dirname(filename)).mkdir(parents=True, exist_ok=True)
 
         with open(filename, "w") as f:
             f.write(json.dumps(self._data, indent=2))
             self._filename = filename
 
     @property
-    def data(self):
+    def data(self) -> dict:
+        """
+        Returns a deep copy of the event data.
+
+        :return: A copy of the event data.
+        """
         return copy.deepcopy(self._data)
 
 
