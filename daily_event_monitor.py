@@ -10,6 +10,8 @@ import pytz
 
 TIMEZONE = pytz.timezone("US/Eastern")
 
+DailyEventValueType = str
+
 
 def time_now() -> str:
     """
@@ -98,7 +100,7 @@ class DailyEventMonitor:
 
     def _lookup_day(
         self, year: int, month: int, day: int
-    ) -> typing.List[typing.Tuple[typing.Tuple[str, int]]]:
+    ) -> typing.List[typing.Tuple[typing.Tuple[str, DailyEventValueType]]]:
         """
         Looks up events for a specific day.
 
@@ -116,7 +118,7 @@ class DailyEventMonitor:
 
     def get(
         self, year: int, month: int, day: int
-    ) -> typing.List[typing.Tuple[typing.Tuple[str, int]]]:
+    ) -> typing.List[typing.Tuple[typing.Tuple[str, DailyEventValueType]]]:
         """
         Retrieves events for a specific day.
 
@@ -128,7 +130,12 @@ class DailyEventMonitor:
         return self._lookup_day(year=year, month=month, day=day)
 
     def add(
-        self, year: int, month: int, day: int, value: int, ignore_repeat: bool = True
+        self,
+        year: int,
+        month: int,
+        day: int,
+        value: DailyEventValueType,
+        ignore_repeat: bool = True,
     ) -> bool:
         """
         Adds an event for a specific day.
@@ -198,6 +205,3 @@ class DailyEventMonitor:
         :return: A copy of the event data.
         """
         return copy.deepcopy(self._data)
-
-
-# output something in "./data"
