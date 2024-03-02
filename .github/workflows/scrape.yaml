@@ -1,23 +1,17 @@
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [main]
   pull_request:
     branches: [main]
   schedule:
-    # Run at every 5th minute past every hour from 9 through 18 on every
-    # day-of-week from Wednesday through Sunday
-    # https://crontab.guru/#*/5_9-18_*_*_0,3-6
-    - cron: "*/5 9-18 * * 0,3-6"
+    - cron: "*/5 9-18 * * 0,3-6"  # 🕘 Scheduled during work hours
+    - cron: "30 0-8,18-23 * * *"  # 🌙 Scheduled during off hours
+    - cron: "30 9-18 * * 1-2"  # 📅 Scheduled on early weekdays
 
-    # Run every hour outside of the hot period above
-    - cron: "30 0-8,18-23 * * *"
-    - cron: "30 9-18 * * 1-2"
-
-name: Scrape Update
+name: Scrape Update 🔄
 jobs:
   update-logs:
-    name: Scrape Update
+    name: Scrape Update 🔄
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -28,40 +22,39 @@ jobs:
       repository-projects: write
 
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
+      - name: 📥 Check out repository code
+        uses: actions/checkout@v4
 
-      # Setup Python (faster than using Python container)
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.9"
 
-      - name: Install pipenv
+      - name: 📦 Install pipenv
         run: |
           python -m pip install --upgrade pipenv wheel
 
-      - name: Check pipenv cache before installing dependencies
+      - name: 🔄 Check pipenv cache before installing dependencies
         id: cache-pipenv
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ~/.local/share/virtualenvs
           key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
 
-      - name: Install dependencies
+      - name: 🛠 Install dependencies
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
           touch Pipfile
           pipenv install --deploy --dev
 
-      - name: Scrape content and output
+      - name: 🕵️‍♂️ Scrape content and output
         run: |
           pipenv run python ./script.py
 
-      - name: Commit generated logs 🚀
+      - name: 🚀 Commit generated logs
         uses: EndBug/add-and-commit@v9
         with:
-          message: "Commit updated data"
+          message: "Commit updated data 📈"
           add: "./data/*.json ./data/*.csv"
           cwd: "."
           force: true
