@@ -5,6 +5,7 @@ verify_ssl = true
 
 [packages]
 bs4 = "*"
+loguru = "*"
 pytz = "*"
 requests = "*"
 waybackpy = "*"
