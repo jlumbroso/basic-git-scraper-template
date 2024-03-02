@@ -23,6 +23,17 @@ def time_now() -> str:
     return datetime.datetime.now(TIMEZONE).strftime("%Y-%m-%d %I:%M%p")
 
 
+def today() -> typing.Tuple[int, int, int]:
+    """
+    Gets the current date in the "US/Eastern" timezone.
+
+    :return: A tuple of (year, month, day) representing the current date.
+    :rtype: typing.Tuple[int, int, int]
+    """
+    now = datetime.datetime.now(TIMEZONE)
+    return (now.year, now.month, now.day)
+
+
 def prev_day(
     year: int, month: int, day: int
 ) -> typing.Optional[typing.Tuple[int, int, int]]:
@@ -155,6 +166,23 @@ class DailyEventMonitor:
         # add data point
         data.append((time_now(), value))
         return True
+
+    def add_today(self, value: DailyEventValueType, ignore_repeat: bool = True) -> bool:
+        """
+        Adds an event for the current day.
+
+        :param value: The value or identifier of the event to add.
+        :param ignore_repeat: Whether to ignore the event if it is a repeat of the last event for that day.
+        :return: True if the event was added, False otherwise (e.g., if ignored due to being a repeat).
+        """
+        (year_now, month_now, day_now) = today()
+        return self.add(
+            year=year_now,
+            month=month_now,
+            day=day_now,
+            value=value,
+            ignore_repeat=ignore_repeat,
+        )
 
     def load(self, filename: typing.Optional[str] = None) -> bool:
         """
