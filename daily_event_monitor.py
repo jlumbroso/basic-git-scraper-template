@@ -226,6 +226,15 @@ class DailyEventMonitor:
             self._filename = filename
 
     @property
+    def file_path(self) -> typing.Optional[str]:
+        """
+        Returns the path to the file where event data is saved.
+
+        :return: The path to the file where event data is saved.
+        """
+        return self._filename
+
+    @property
     def data(self) -> dict:
         """
         Returns a deep copy of the event data.
